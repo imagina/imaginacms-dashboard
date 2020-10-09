@@ -65,6 +65,7 @@ class DashboardServiceProvider extends ServiceProvider
         $this->publishConfig('dashboard', 'permissions');
         $this->publishConfig('dashboard', 'config');
         $this->publishConfig('dashboard', 'settings');
+        $this->publishConfig('dashboard', 'settings-fields');
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
