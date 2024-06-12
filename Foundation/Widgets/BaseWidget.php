@@ -3,6 +3,7 @@
 namespace Modules\Dashboard\Foundation\Widgets;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Str;
 use Modules\Dashboard\Composers\WidgetViewComposer;
 
 abstract class BaseWidget
@@ -21,7 +22,7 @@ abstract class BaseWidget
                          ->with($this->data())
                          ->render();
 
-            $sluggedName = str_slug($this->name());
+            $sluggedName = Str::slug($this->name());
 
             $widgetViewComposer
                 ->setWidgetName($sluggedName)
@@ -32,6 +33,7 @@ abstract class BaseWidget
 
     /**
      * Get the widget name
+     *
      * @return string
      */
     abstract protected function name();
@@ -40,18 +42,21 @@ abstract class BaseWidget
      * Return an array of widget options
      * Possible options:
      *  x, y, width, height
+     *
      * @return array
      */
     abstract protected function options();
 
     /**
      * Get the widget view
+     *
      * @return string
      */
     abstract protected function view();
 
     /**
      * Get the widget data to send to the view
+     *
      * @return array
      */
     abstract protected function data();

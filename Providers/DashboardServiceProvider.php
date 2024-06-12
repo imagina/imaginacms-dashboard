@@ -2,6 +2,7 @@
 
 namespace Modules\Dashboard\Providers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Modules\Core\Events\BuildingSidebar;
 use Modules\Core\Events\LoadingBackendTranslations;
@@ -17,6 +18,7 @@ use Modules\Workshop\Manager\StylistThemeManager;
 class DashboardServiceProvider extends ServiceProvider
 {
     use CanPublishConfiguration, CanGetSidebarClassForModule;
+
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -26,10 +28,8 @@ class DashboardServiceProvider extends ServiceProvider
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(WidgetRepository::class, function () {
             $repository = new EloquentWidgetRepository(new Widget());
@@ -47,35 +47,33 @@ class DashboardServiceProvider extends ServiceProvider
         );
 
         $this->app['events']->listen(LoadingBackendTranslations::class, function (LoadingBackendTranslations $event) {
-            $event->load('dashboard', array_dot(trans('dashboard::dashboard')));
+            $event->load('dashboard', Arr::dot(trans('dashboard::dashboard')));
         });
     }
 
-    public function boot(StylistThemeManager $theme)
+    public function boot(StylistThemeManager $theme): void
     {
         $this->publishes([
-            __DIR__ . '/../Resources/views' => base_path('resources/views/asgard/dashboard'),
+            __DIR__.'/../Resources/views' => base_path('resources/views/asgard/dashboard'),
         ], 'views');
 
         $this->app['view']->prependNamespace(
             'dashboard',
-            $theme->find(config('asgard.core.core.admin-theme'))->getPath() . '/views/modules/dashboard'
+            $theme->find(config('asgard.core.core.admin-theme'))->getPath().'/views/modules/dashboard'
         );
 
-        $this->publishConfig('dashboard', 'permissions');
         $this->publishConfig('dashboard', 'config');
-        $this->publishConfig('dashboard', 'settings');
-        $this->publishConfig('dashboard', 'settings-fields');
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->mergeConfigFrom($this->getModuleConfigFilePath('dashboard', 'permissions'), 'asgard.dashboard.permissions');
+        $this->mergeConfigFrom($this->getModuleConfigFilePath('dashboard', 'settings'), 'asgard.dashboard.settings');
+        $this->mergeConfigFrom($this->getModuleConfigFilePath('dashboard', 'settings-fields'), 'asgard.dashboard.settings-fields');
+        //$this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
-    public function provides()
+    public function provides(): array
     {
-        return array();
+        return [];
     }
 }
